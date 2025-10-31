@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Hierarchy - Parking Management{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-sitemap text-blue-600 mr-3"></i>
+            Employee Hierarchy
+        </h1>
+        <p class="text-gray-600 mt-2">Organization structure and reporting lines</p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+            <div class="flex items-center">
+                <i class="fas fa-users text-blue-600 text-2xl mr-3"></i>
+                <div>
+                    <p class="text-sm font-medium text-blue-900">Total Employees</p>
+                    <p class="text-2xl font-bold text-blue-600">{{ employees|length }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-purple-50 rounded-lg p-4 border-l-4 border-purple-500">
+            <div class="flex items-center">
+                <i class="fas fa-user-shield text-purple-600 text-2xl mr-3"></i>
+                <div>
+                    <p class="text-sm font-medium text-purple-900">Admins</p>
+                    <p class="text-2xl font-bold text-purple-600">{{ employees|selectattr("Role", "equalto", "Admin")|list|length }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
+            <div class="flex items-center">
+                <i class="fas fa-user-tie text-green-600 text-2xl mr-3"></i>
+                <div>
+                    <p class="text-sm font-medium text-green-900">Managers</p>
+                    <p class="text-2xl font-bold text-green-600">{{ employees|selectattr("Role", "equalto", "Manager")|list|length }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-yellow-50 rounded-lg p-4 border-l-4 border-yellow-500">
+            <div class="flex items-center">
+                <i class="fas fa-user-cog text-yellow-600 text-2xl mr-3"></i>
+                <div>
+                    <p class="text-sm font-medium text-yellow-900">Supervisors</p>
+                    <p class="text-2xl font-bold text-yellow-600">{{ employees|selectattr("Role", "equalto", "Supervisor")|list|length }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-id-badge mr-2"></i>Employee ID
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-user mr-2"></i>Employee Name
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-briefcase mr-2"></i>Role
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-user-friends mr-2"></i>Manager
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for employee in employees %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <span class="bg-gray-100 px-3 py-1 rounded-full">{{ employee.EmployeeID }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                            {{ employee.EmployeeName }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                                {% if employee.Role == 'Admin' %}bg-purple-100 text-purple-800
+                                {% elif employee.Role == 'Manager' %}bg-blue-100 text-blue-800
+                                {% elif employee.Role == 'Supervisor' %}bg-green-100 text-green-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                <i class="fas fa-{% if employee.Role == 'Admin' %}user-shield{% elif employee.Role == 'Manager' %}user-tie{% else %}user-cog{% endif %} mr-2"></i>
+                                {{ employee.Role }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {% if employee.ManagerName %}
+                                <i class="fas fa-level-up-alt text-gray-400 mr-2"></i>{{ employee.ManagerName }}
+                            {% else %}
+                                <span class="text-gray-400 italic">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

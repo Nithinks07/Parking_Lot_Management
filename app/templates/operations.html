@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Parking Operations{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-cogs text-blue-600 mr-3"></i>
+            Parking Operations
+        </h1>
+        <p class="text-gray-600 mt-2">Manage vehicle entries, exits, and reservations</p>
+    </div>
+
+    <!-- Three Column Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Vehicle Entry Card -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-t-lg">
+                <h2 class="text-xl font-semibold flex items-center">
+                    <i class="fas fa-car-side mr-3"></i>
+                    Process Vehicle Entry
+                </h2>
+            </div>
+            <div class="p-6">
+                <form method="POST" action="{{ url_for('bp.process_entry_route') }}" class="space-y-4">
+                    <div>
+                        <label for="entry_license_plate" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-id-card text-gray-400 mr-2"></i>License Plate
+                        </label>
+                        <input type="text" 
+                               id="entry_license_plate"
+                               name="license_plate" 
+                               required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono uppercase"
+                               placeholder="ABC-1234">
+                    </div>
+                    
+                    <div>
+                        <label for="space_id_entry" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-parking text-gray-400 mr-2"></i>Space ID
+                        </label>
+                        <input type="number" 
+                               id="space_id_entry"
+                               name="space_id" 
+                               required
+                               min="1"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Enter space number">
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-semibold">
+                        <i class="fas fa-check-circle mr-2"></i>Submit Entry
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Vehicle Exit Card -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-4 rounded-t-lg">
+                <h2 class="text-xl font-semibold flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    Process Vehicle Exit
+                </h2>
+            </div>
+            <div class="p-6">
+                <form method="POST" action="{{ url_for('bp.process_exit_route') }}" class="space-y-4">
+                    <div>
+                        <label for="exit_license_plate" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-id-card text-gray-400 mr-2"></i>License Plate
+                        </label>
+                        <input type="text" 
+                            id="exit_license_plate"
+                            name="license_plate" 
+                            required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-mono uppercase"
+                            placeholder="ABC-1234">
+                    </div>
+                    
+                    <div>
+                        <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-money-bill-wave text-gray-400 mr-2"></i>Payment Method
+                        </label>
+                        <select id="payment_method" 
+                                name="payment_method" 
+                                required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                            <option value="" disabled selected>Select payment method</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Subscription">Subscription</option>
+                        </select>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-red-600 text-white py-3 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors font-semibold">
+                        <i class="fas fa-dollar-sign mr-2"></i>Pay & Submit Exit
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reservation Card -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-4 rounded-t-lg">
+                <h2 class="text-xl font-semibold flex items-center">
+                    <i class="fas fa-calendar-check mr-3"></i>
+                    Book Reservation
+                </h2>
+            </div>
+            <div class="p-6">
+                <form method="POST" action="{{ url_for('bp.book_reservation_route') }}" class="space-y-4">
+                    <div>
+                        <label for="customer_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user text-gray-400 mr-2"></i>Customer ID
+                        </label>
+                        <input type="number" 
+                            id="customer_id"
+                            name="customer_id" 
+                            required
+                            min="1"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            placeholder="Enter customer ID">
+                    </div>
+
+                    <div>
+                        <label for="space_id_reservation" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-parking text-gray-400 mr-2"></i>Space ID
+                        </label>
+                        <input type="number" 
+                            id="space_id_reservation"
+                            name="space_id" 
+                            required
+                            min="1"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            placeholder="Enter space number">
+                    </div>
+
+                    <div>
+                        <label for="license_plate" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-car text-gray-400 mr-2"></i>Vehicle License Plate
+                        </label>
+                        <input type="text" 
+                            id="license_plate"
+                            name="license_plate"
+                            maxlength="15"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            placeholder="Enter vehicle license plate (optional)">
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors font-semibold">
+                        <i class="fas fa-calendar-plus mr-2"></i>Book Reservation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Clean, centered Customer History Card -->
+    <div class="mt-8">
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow max-w-md mx-auto">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-4 rounded-t-lg">
+                <h2 class="text-xl font-semibold flex items-center">
+                    <i class="fas fa-history mr-3"></i>
+                    Customer History
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label for="customer_id_search" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user text-gray-400 mr-2"></i>Customer ID
+                        </label>
+                        <input type="number" 
+                               id="customer_id_search"
+                               name="customer_id_search" 
+                               min="1"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               placeholder="Enter customer ID">
+                    </div>
+                    
+                    <button type="button" 
+                            onclick="showCustomerHistory(document.getElementById('customer_id_search').value)"
+                            class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors font-semibold">
+                        <i class="fas fa-search mr-2"></i>View History
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Info Section -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+            <div class="flex items-center">
+                <i class="fas fa-info-circle text-blue-600 text-2xl mr-3"></i>
+                <div>
+                    <p class="text-sm font-medium text-blue-900">Entry Process</p>
+                    <p class="text-xs text-blue-700 mt-1">Register incoming vehicles with license plate and space ID</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4">
+            <div class="flex items-center">
+                <i class="fas fa-info-circle text-red-600 text-2xl mr-3"></i>
+                <div>
+                    <p class="text-sm font-medium text-red-900">Exit Process</p>
+                    <p class="text-xs text-red-700 mt-1">Process vehicle exit and calculate parking fees</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4">
+            <div class="flex items-center">
+                <i class="fas fa-info-circle text-green-600 text-2xl mr-3"></i>
+                <div>
+                    <p class="text-sm font-medium text-green-900">Reservation</p>
+                    <p class="text-xs text-green-700 mt-1">Pre-book parking spaces for customers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- ADD THIS NEW CODE ---
+    // Check for a space_id in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const spaceId = urlParams.get('space_id');
+    if (spaceId) {
+        // Pre-fill the entry form's Space ID input
+        document.getElementById('space_id_entry').value = spaceId;
+    }
+    // --- END OF NEW CODE ---
+
+    // Auto-uppercase license plate inputs
+    document.getElementById('entry_license_plate').addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+    
+    document.getElementById('exit_license_plate').addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+
+    // Number input validation
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value < 1) {
+                this.value = 1;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

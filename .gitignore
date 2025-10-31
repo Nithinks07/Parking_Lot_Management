@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+plmenv/
+
+
+# OS / Editor specific
+.vscode/
+
+
+# Deliverables / Output
+Deliverables/
+*.zip
+*.tar.gz
+*.bak
+IDE & OS files
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and caches
+*.log
+*.tmp
+*.cache/

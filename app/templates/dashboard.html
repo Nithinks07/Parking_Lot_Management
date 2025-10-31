@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Parking Management{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p class="text-gray-600 mt-2">Real-time parking occupancy and financial overview</p>
+    </div>
+
+    <!-- Occupancy Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Spaces -->
+        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500 hover:shadow-lg transition">
+            <div class="flex items-center">
+                <div class="p-3 bg-blue-100 rounded-lg">
+                    <i class="fas fa-parking text-blue-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Spaces</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ occupancy.TotalSpaces or 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Occupied -->
+        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500 hover:shadow-lg transition">
+            <div class="flex items-center">
+                <div class="p-3 bg-green-100 rounded-lg">
+                    <i class="fas fa-car text-green-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Occupied</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ occupancy.OccupiedCount or 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reserved -->
+        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500 hover:shadow-lg transition">
+            <div class="flex items-center">
+                <div class="p-3 bg-yellow-100 rounded-lg">
+                    <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Reserved</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ occupancy.ReservedCount or 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vacant -->
+        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500 hover:shadow-lg transition">
+            <div class="flex items-center">
+                <div class="p-3 bg-red-100 rounded-lg">
+                    <i class="fas fa-square text-red-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Vacant</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ occupancy.VacantCount or 0 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts & Reports -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Occupancy Chart -->
+        <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-chart-pie text-blue-600 mr-2"></i>
+                Parking Occupancy
+            </h2>
+            <div class="h-64">
+                <canvas id="occupancyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Financial Report -->
+        <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
+                Financial Report
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Payment Method</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Transactions</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for item in financial_report %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                    {% if item.Method == 'Cash' %}
+                                        bg-green-100 text-green-800
+                                    {% elif item.Method == 'Card' %}
+                                        bg-blue-100 text-blue-800
+                                    {% else %}
+                                        bg-purple-100 text-purple-800
+                                    {% endif %}">
+                                    <i class="fas fa-{% if item.Method == 'Cash' %}money-bill-wave{% elif item.Method == 'Card' %}credit-card{% else %}wallet{% endif %} mr-2"></i>
+                                    {{ item.Method }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-semibold">{{ item.TotalTransactions or 0 }}</td>
+                            <td class="px-6 py-4 text-sm text-green-700 font-bold">₱{{ "{:,.2f}".format(item.TotalRevenue or 0) }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="bg-gray-50 font-bold">
+                            <td class="px-6 py-4 text-sm text-gray-900">TOTAL</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">
+                                {{ financial_report|sum(attribute='TotalTransactions') or 0 }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-green-700">
+                                ₱{{ "{:,.2f}".format(financial_report|sum(attribute='TotalRevenue') or 0) }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6 mt-8 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-th-list text-blue-600 mr-2"></i>
+            Parking Space Status
+        </h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-hashtag mr-2"></i>Space Number
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-parking mr-2"></i>Space Type
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-info-circle mr-2"></i>Status
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-cog mr-2"></i>Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% if all_spaces %}
+                        {% for space in all_spaces %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                    {{ space.SpaceNumber }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ space.SpaceType }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                                    {% if space.Status == 'Vacant' %}bg-green-100 text-green-800
+                                    {% elif space.Status == 'Occupied' %}bg-red-100 text-red-800
+                                    {% elif space.Status == 'Reserved' %}bg-yellow-100 text-yellow-800
+                                    {% elif space.Status == 'Maintenance' %}bg-gray-100 text-gray-800
+                                    {% endif %}">
+                                    <i class="fas fa-{% if space.Status == 'Vacant' %}check-circle{% elif space.Status == 'Occupied' %}car{% elif space.Status == 'Reserved' %}clock{% elif space.Status == 'Maintenance' %}tools{% endif %} mr-2"></i>
+                                    {{ space.Status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                {% if space.Status == 'Vacant' %}
+                                    <a href="{{ url_for('bp.operations') }}?space_id={{ space.SpaceID }}" class="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded hover:bg-blue-600">
+                                        <i class="fas fa-arrow-right mr-1"></i>Use Space
+                                    </a>
+                                {% elif space.Status == 'Occupied' %}
+                                    <a href="{{ url_for('bp.operations') }}" class="px-3 py-1 text-xs font-medium text-white bg-red-500 rounded hover:bg-red-600">
+                                        <i class="fas fa-sign-out-alt mr-1"></i>Process Exit
+                                    </a>
+                                {% else %}
+                                    <span class="text-gray-400 italic text-xs">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                                No parking spaces found in the database.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('occupancyChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Occupied', 'Reserved', 'Vacant'],
+                datasets: [{
+                    data: [
+                        {{ occupancy.OccupiedCount or 0 }},
+                        {{ occupancy.ReservedCount or 0 }},
+                        {{ occupancy.VacantCount or 0 }}
+                    ],
+                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 12 }, padding: 15 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = {{ occupancy.TotalSpaces or 1 }};
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

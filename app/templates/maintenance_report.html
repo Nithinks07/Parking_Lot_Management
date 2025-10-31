@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance Logs - Parking Management{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-tools text-blue-600 mr-3"></i>
+            Maintenance Management
+        </h1>
+        <p class="text-gray-600 mt-2">Create new maintenance logs and manage space status</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-1 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-t-lg">
+                <h2 class="text-xl font-semibold flex items-center">
+                    <i class="fas fa-plus-circle mr-3"></i>
+                    Create New Maintenance Log
+                </h2>
+            </div>
+            <div class="p-6">
+                <form method="POST" action="{{ url_for('bp.add_maintenance_log_route') }}" class="space-y-4">
+                    <div>
+                        <label for="space_id" class="block text-sm font-medium text-gray-700 mb-1">Space ID*</label>
+                        <input type="number" name="space_id" id="space_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., 401">
+                        <p class="text-xs text-gray-500 mt-1">This will set the space status to 'Maintenance'.</p>
+                    </div>
+                    <div>
+                        <label for="cost" class="block text-sm font-medium text-gray-700 mb-1">Cost (₹)*</label>
+                        <input type="number" step="0.01" name="cost" id="cost" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., 50.00">
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description*</label>
+                        <textarea name="description" id="description" rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., Repaired EV charger circuit"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 font-semibold">
+                        <i class="fas fa-save mr-2"></i>Save Log
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            {% if maintenance_logs %}
+            <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-gray-500">
+                    <p class="text-sm font-medium text-gray-900">Total Logs</p>
+                    <p class="text-2xl font-bold text-gray-700">{{ maintenance_logs|selectattr("LogID")|list|length }}</p>
+                </div>
+                <div class="bg-yellow-50 rounded-lg p-4 border-l-4 border-yellow-500">
+                    <p class="text-sm font-medium text-yellow-900">Spaces Under Maintenance</p>
+                    <p class="text-2xl font-bold text-yellow-600">{{ maintenance_logs|selectattr("Status", "equalto", "Maintenance")|list|length }}</p>
+                </div>
+                <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
+                    <p class="text-sm font-medium text-green-900">Total Cost</p>
+                    <p class="text-2xl font-bold text-green-600">
+                        ₱{{ "{:,.2f}".format(maintenance_logs | map(attribute='Cost') | map('default', 0) | sum) }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="overflow-x-auto max-h-[600px]"> <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Space</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Log Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cost</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for log in maintenance_logs %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                        {{ log.SpaceNumber }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex px-3 py-1 rounded-full text-xs font-medium 
+                                        {% if log.Status == 'Maintenance' %}bg-yellow-100 text-yellow-800
+                                        {% elif log.Status == 'Vacant' %}bg-green-100 text-green-800
+                                        {% else %}bg-red-100 text-red-800{% endif %}">
+                                        {{ log.Status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    {{ log.Maintenance_data.strftime('%Y-%m-%d') if log.Maintenance_data else 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900 max-w-xs">
+                                    {{ log.Description or 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 text-sm font-bold">
+                                    <span class="{% if log.Cost > 1000 %}text-red-600{% else %}text-green-600{% endif %}">
+                                        ₱{{ "{:,.2f}".format(log.Cost) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    {% if log.Status == 'Maintenance' %}
+                                    <form action="{{ url_for('bp.complete_maintenance_route') }}" method="POST">
+                                        <input type="hidden" name="space_id" value="{{ log.SpaceID }}">
+                                        <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-green-500 rounded hover:bg-green-600">
+                                            <i class="fas fa-check-circle mr-1"></i>Mark as Complete
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                        <span class="text-gray-400 italic text-xs">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="p-10 text-center text-gray-500">
+                <i class="fas fa-info-circle text-3xl mb-3"></i><br>
+                No maintenance logs found.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

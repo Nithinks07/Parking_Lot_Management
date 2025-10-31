@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Data Management{% endblock %}
+
+{% block content %}
+<!-- Adjusted layout to prevent overlap with sidebar -->
+<div class="ml-50 p-6"> <!-- 👈 Added left margin to offset sidebar width -->
+
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            <i class="fas fa-concierge-bell text-blue-600 mr-3"></i>
+            Service Management
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-4 rounded-t-lg">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fas fa-plus-circle mr-3"></i>
+                        Add New Service
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <form method="POST" action="{{ url_for('bp.add_service_route') }}" class="space-y-4">
+                        <div>
+                            <label for="service_name" class="block text-sm font-medium text-gray-700 mb-1">Service Name*</label>
+                            <input type="text" name="service_name" id="service_name" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., Car Wash">
+                        </div>
+                        <div>
+                            <label for="service_description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea name="service_description" id="service_description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., Exterior wash and wax"></textarea>
+                        </div>
+                        <div>
+                            <label for="service_cost" class="block text-sm font-medium text-gray-700 mb-1">Cost (₹)*</label>
+                            <input type="number" step="0.01" name="service_cost" id="service_cost" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., 25.50">
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 font-semibold">
+                            <i class="fas fa-plus-circle mr-2"></i>Add Service
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-gray-700 text-white px-6 py-4 rounded-t-lg">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fas fa-list-ul mr-3"></i>
+                        Available Services
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <ul class="space-y-3">
+                        {% if services %}
+                            {% for service in services %}
+                                <li class="p-3 bg-gray-50 rounded-md border border-gray-200">
+                                    <div class="flex justify-between items-center">
+                                        <p class="font-semibold text-gray-800">
+                                            <span class="font-bold text-blue-600">ID: {{ service.ServiceID }}</span> - {{ service.Name }}
+                                        </p>
+                                        <span class="text-lg font-bold text-green-600">₹{{ "%.2f"|format(service.Cost) }}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">{{ service.Description }}</p>
+                                    <div class="text-right mt-2 space-x-2">
+                                        <button type="button" onclick="openEditServiceModal({{ service.ServiceID }})" class="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded hover:bg-blue-600">
+                                            <i class="fas fa-edit mr-1"></i>Edit
+                                        </button>
+                                        
+                                        <form action="{{ url_for('bp.delete_service_route') }}" method="POST" class="inline">
+                                            <input type="hidden" name="service_id" value="{{ service.ServiceID }}">
+                                            <button type="submit" onclick="return confirm('Are you sure you want to delete this service? This is permanent.')" class="px-3 py-1 text-xs font-medium text-white bg-red-500 rounded hover:bg-red-600">
+                                                <i class="fas fa-trash mr-1"></i>Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="text-gray-500">No services found. Add one!</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-4 rounded-t-lg">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fas fa-link mr-3"></i>
+                        Assign Service to Customer
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <form method="POST" action="{{ url_for('bp.assign_service_route') }}" class="space-y-4">
+                        <div>
+                            <label for="customer_id_service" class="block text-sm font-medium text-gray-700 mb-1">Customer ID*</LabeL>
+                            <input type="number" name="customer_id_service" id="customer_id_service" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., 1001">
+                        </div>
+                        <div>
+                            <label for="service_id" class="block text-sm font-medium text-gray-700 mb-1">Service ID*</label>
+                            <input type="number" name="service_id" id="service_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., 1">
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 font-semibold mt-6">
+                            <i class="fas fa-plus-circle mr-2"></i>Assign Service
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Customer & Vehicle Management Section -->
+    <div class="mt-16">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">
+                <i class="fas fa-users-cog text-blue-600 mr-3"></i>
+                Customer & Vehicle Management
+            </h1>
+            <p class="text-gray-600 mt-2">Add new customers and vehicles to the system</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Add Customer -->
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-4 rounded-t-lg">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fas fa-user-plus mr-3"></i>
+                        Add New Customer
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <form method="POST" action="{{ url_for('bp.add_customer_route') }}" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="customer_id" class="block text-sm font-medium text-gray-700 mb-1">Customer ID*</label>
+                                <input type="number" name="customer_id" id="customer_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., 5001">
+                            </div>
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name*</label>
+                                <input type="text" name="name" id="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                <input type="tel" name="phone" id="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" name="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="street" class="block text-sm font-medium text-gray-700 mb-1">Street</label>
+                            <input type="text" name="street" id="street" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                <input type="text" name="city" id="city" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="state" class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                <input type="text" name="state" id="state" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="zip" class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
+                                <input type="text" name="zip" id="zip" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 font-semibold">
+                            <i class="fas fa-plus-circle mr-2"></i>Add Customer
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Vehicle -->
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-t-lg">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fas fa-car-side mr-3"></i>
+                        Add New Vehicle
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <form method="POST" action="{{ url_for('bp.add_vehicle_route') }}" class="space-y-4">
+                        <div>
+                            <label for="license_plate" class="block text-sm font-medium text-gray-700 mb-1">License Plate*</label>
+                            <input type="text" name="license_plate" id="license_plate" required class="w-full px-3 py-2 border border-gray-300 rounded-md uppercase" placeholder="ABC-1234">
+                        </div>
+
+                        <div>
+                            <label for="customer_id_vehicle" class="block text-sm font-medium text-gray-700 mb-1">Customer ID*</label>
+                            <input type="number" name="customer_id_vehicle" id="customer_id_vehicle" required class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., 5001">
+                            <p class="text-xs text-gray-500 mt-1">ID of the customer who owns this vehicle.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="make" class="block text-sm font-medium text-gray-700 mb-1">Make</label>
+                                <input type="text" name="make" id="make" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., Toyota">
+                            </div>
+                            <div>
+                                <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                                <input type="text" name="model" id="model" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., Camry">
+                            </div>
+                            <div>
+                                <label for="color" class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                                <input type="text" name="color" id="color" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., Silver">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 font-semibold mt-6">
+                            <i class="fas fa-plus-circle mr-2"></i>Add Vehicle
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
