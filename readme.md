@@ -94,7 +94,7 @@ cd PLM-Parking-System
 # Windows
 python -m venv venv
 .
-env\Scripts ctivate
+env\Scripts\activate
 
 # macOS / Linux
 python3 -m venv venv
@@ -126,7 +126,7 @@ python run.py
 ```
 
 Access it in your browser at:  
-👉 http://127.0.0.1:5000
+👉 http://127.0.0.1:5000/login
 
 ---
 
