@@ -85,7 +85,7 @@ Follow these steps to run the project on your local machine.
 
 #### 🧩 Step 1: Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/PLM-Parking-System.git
+git clone https://github.com/Nithinks07/PLM-Parking-System.git
 cd PLM-Parking-System
 ```
 
