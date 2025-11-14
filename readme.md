@@ -5,6 +5,13 @@ This system provides a complete solution for operators — from real-time vehicl
 
 ---
 
+<img width="939" height="528" alt="image" src="https://github.com/user-attachments/assets/57f5f420-b128-4014-9c03-cb1d6d509fe5" />
+<img width="895" height="503" alt="image" src="https://github.com/user-attachments/assets/776111d3-f6b1-424c-9442-bc232026b192" />
+<img width="931" height="524" alt="image" src="https://github.com/user-attachments/assets/2cd2de1c-23bf-4aa0-86e7-a737cd62d211" />
+<img width="888" height="499" alt="image" src="https://github.com/user-attachments/assets/db24f5fc-7075-4f68-b8cf-9d6edf4d78e2" />
+
+
+
 ## 🌟 Key Features
 
 The application is organized into modules based on **user roles and responsibilities**.
@@ -179,9 +186,17 @@ PLM/
 
 ---
 
-## 🧑‍💻 Author
-**Nithin K S**  
+## 🧑‍💻 Authors
+**1. Nithin K S**  
 📍 PES University  
 💻 GitHub: [@Nithinks07](https://github.com/Nithinks07)
+**2. Nikhil P S**  
+📍 PES University  
+💻 GitHub: [@pes1ug23am191](https://github.com/pes1ug23am191)
+
+
+
+
+
 
 
