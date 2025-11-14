@@ -5,10 +5,11 @@ This system provides a complete solution for operators — from real-time vehicl
 
 ---
 
-<img width="939" height="528" alt="image" src="https://github.com/user-attachments/assets/57f5f420-b128-4014-9c03-cb1d6d509fe5" />
-<img width="895" height="503" alt="image" src="https://github.com/user-attachments/assets/776111d3-f6b1-424c-9442-bc232026b192" />
-<img width="888" height="499" alt="image" src="https://github.com/user-attachments/assets/db24f5fc-7075-4f68-b8cf-9d6edf4d78e2" />
-<img width="931" height="524" alt="image" src="https://github.com/user-attachments/assets/2cd2de1c-23bf-4aa0-86e7-a737cd62d211" />
+<img width="1918" height="939" alt="image" src="https://github.com/user-attachments/assets/ed99a097-0ecf-4feb-96d7-9e3376706711" />
+<img width="1912" height="945" alt="image" src="https://github.com/user-attachments/assets/797e1154-9a15-4ffd-bdd0-2a2c388bc37b" />
+<img width="1918" height="940" alt="image" src="https://github.com/user-attachments/assets/aea86693-7016-41e5-b1b7-336b846e377d" />
+<img width="1916" height="941" alt="image" src="https://github.com/user-attachments/assets/12f2fc5e-0735-4f99-80cd-00556febedc1" />
+
 
 
 
